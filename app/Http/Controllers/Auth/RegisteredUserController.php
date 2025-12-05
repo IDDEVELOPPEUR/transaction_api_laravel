@@ -43,7 +43,9 @@ class RegisteredUserController extends Controller
             //'active' => false,
             'password' => Hash::make($request->password),
         ]);
-
+// la ligne suivante permet de  créer un compte administrateur par defaut et le
+        // le event permet de l'envoyer à la page de connexion
+        // et le new Registered($user) permet de créer un compte administrateur par defaut'
         event(new Registered($user));
 
         Auth::login($user);
