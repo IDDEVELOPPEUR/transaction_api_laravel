@@ -18,3 +18,8 @@ Route::put('users/{id}/statut ', [UserController::class,'active_desactive']);
 
 //pour les contacts
 Route::get('contacts',[ContactController::class,'index']);
+Route::post('contacts',[ContactController::class,'store']);
+Route::get('contacts/{id}',[ContactController::class,'show']);
+Route::delete('contacts/{id}',[ContactController::class,'destroy']);
+Route::put('contacts/{id}',[ContactController::class,'update']);
+Route::get('contacts/user/{user_id}',[ContactController::class,'contactsUser']);

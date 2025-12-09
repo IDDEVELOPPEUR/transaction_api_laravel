@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Models\Account;
 
 class UserController extends Controller
 {
@@ -25,10 +26,10 @@ class UserController extends Controller
     {
         //validation des données
         $request->validate([
-            'prenom'=> ['required', 'max:100' , 'string'],
-            'nom'=> ['required' , 'string' , 'max:100'],
-            'email'=> ['required', 'max:255' , 'string' , 'email' , 'unique:users,email'],
-            'password' => ['required' , 'string' , 'max:255', 'min:6']
+            'prenom'=> ['required', 'max:100' , 'string' ,'min:2'],
+            'nom'=> ['required' , 'string' , 'max:100','min:2'],
+            'email'=> ['required', 'max:100' , 'string' , 'email' , 'unique:users,email'],
+            'password' => ['required' , 'string' , 'max:100', 'min:6']
         ]);
         
 //ici je verifie si l'email de l'utilisateur existe déja d'abord
@@ -37,7 +38,6 @@ class UserController extends Controller
             if($emailExistant){
                 return response()->json([
                     'erreur sur:'=>$request->email,
-                    'code'=>409,
                     'message'=>'Votre email existe déjà dans la base de données veillez changer d\'email'
             ],409);
 
@@ -46,15 +46,35 @@ class UserController extends Controller
             $user=User::create([
                 'prenom'=>$request->prenom,
                 'nom'=>$request->nom,
-                'email'=>$request->email,
+                'email'=>$request->email,         
                 'password'=>Hash::make($request->password)
             ]);
+            
+            //creation du rib
+            $iban="SN";
+            for($i=1;$i<=11;$i++){
+                $iban.=random_int(0,9);
+
+            }
+            $compte=Account::create([
+                'user_id'=>$user->id,
+                'iban'=>$iban,
+                'solde'=>1000.00
+            ]);
+
+            if(!$compte)
+            {
+                return response()->json([
+                    'message:'=>"Un problème est survenu lors de la creation du compte "
+                ],500);
+            }
 
                 
             return response()->json(
                 [
                 'message'=>'Utilisateur créé avec succès',
-                'donnéées'=> $user
+                'données utilisateur'=> $user,
+                'données compte'=>$compte
                 ],201);
 
         

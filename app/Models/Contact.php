@@ -15,6 +15,7 @@ class Contact extends Model
         'prenom',
         'nom',
         'email',
+        'solde',
         'iban',
         'user_id',
     ];
