@@ -55,8 +55,7 @@ class ContactController extends Controller
             'solde'=>['required','min:1','max:2000000'],
             'email'=>['required' , 'string' , 'email' , 'max:100'],
         ]);
-
-
++
         //verification de l'email
         $emailExist=Contact::where('email',$request->email)->first();
         if($emailExist){
@@ -135,6 +134,7 @@ class ContactController extends Controller
         ],409);
   }
 
+
     if($ibanExist && $ibanExist!=$contactExiste->iban){
         return response()->json([
             "Erreur sur l'iban:"=>$request->iban,
@@ -147,6 +147,8 @@ class ContactController extends Controller
         'nom'=>$request->nom,
         'email'=>$request->email,
     ]);
+
+
     if($contactExiste){
         return response()->json([
             'message'=>'Contact modifié avec succès !',
