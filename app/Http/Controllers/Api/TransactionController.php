@@ -16,9 +16,15 @@ class TransactionController extends Controller
     public function depot(Request $request)
     {
         $request->validate([
-            'user_id'=>'required',
-            'montant'=>['required']
+            // 'user_id'=>'required',
+            // 'montant'=>['required']
         ]);
+        if ($request->user_id=="") {
+            return response()->json([
+                'erreur sur:'=> "le champs user_id",
+                'message'=>'Le user_id est obligatoire veillez le renseigner'
+        ],409);
+        }
         if ($request->montant<500) {
             return response()->json([
                 "Erreur de montant"=>"Attention, le montant doit être suppérieux ou égal à 500 f !",
@@ -31,14 +37,14 @@ class TransactionController extends Controller
        
         if (!$user) {
             return response()->json([
-                "Erreur d'utilisateur"=>"Attention, cet utilisateur est introuvable !",
-                'guide'=>"veillez donnner un id existant svp !"
+                "Erreur"=>"Attention, cet utilisateur est introuvable !",
+                'conseil'=>"Mettez un id existant !"
             ],404);
         }
         if ($user && $user->active==0) {
        
         return response()->json([
-                'Erreur de transaction'=>"Attention ,transaction refusée !",
+                'Erreur de transaction'=>"Transaction refusée !",
                 'message'=>"Le compte de cet utilisateur est dèsactivé ,veillez l'activer"
             ],401);
         }
@@ -182,10 +188,30 @@ class TransactionController extends Controller
     public function transfert(Request $request)
     {
         $request->validate([
-            'user_id'=>'required',
-            'montant'=>'required',
-            'destination_iban'=>'required'
+            // 'user_id'=>'required',
+            // 'montant'=>'required',
+            // 'destination_iban'=>'required'
         ]);
+
+        if ($request->user_id=="") {
+            return response()->json([
+                'erreur sur:'=> "le champs user_id",
+                'message'=>'L\'id utilisateur est obligatoire veillez le renseigner'
+        ],409);
+        }
+
+        if ($request->montant=="") {
+            return response()->json([
+                'erreur sur:'=> "le champs montant",
+                'message'=>'Le montant est obligatoire veillez le renseigner'
+        ],409);
+        }
+        if ($request->destination_iban=="") {
+            return response()->json([
+                'erreur sur:'=> "le champs destination_iban",
+                'message'=>'L\'iban de destination est obligatoire veillez le renseigner'
+        ],409);
+        }
         
         $user=User::where('id',$request->user_id)->first();
         if (!$user) {

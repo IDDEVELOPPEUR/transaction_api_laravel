@@ -26,15 +26,33 @@ class UserController extends Controller
     {
         //validation des données
         $request->validate([
-            'prenom'=> ['required', 'max:100' , 'string' ,'min:2'],
-            'nom'=> ['required' , 'string' , 'max:100','min:2'],
-            'email'=> ['required', 'max:100' , 'string' , 'email' , 'unique:users,email'],
-            'password' => ['required' , 'string' , 'max:100', 'min:6']
+            // 'prenom'=> ['required', 'max:100' , 'string' ,'min:2'],
+            // 'nom'=> ['required' , 'string' , 'max:100','min:2'],
+            // 'email'=> ['required', 'max:100' , 'string' , 'email' , 'unique:users,email'],
+            // 'password' => ['required' , 'string' , 'max:100', 'min:6']
         ]);
         
 //ici je verifie si l'email de l'utilisateur existe déja d'abord
         $emailExistant=User::where('email',$request->email)->first(); 
-
+        //les differentes verifications pour les champs
+            if($request->prenom==""){
+                return response()->json([
+                    'erreur sur:'=>$request->prenom,
+                    'message'=>'Le prénom est obligatoire veillez le renseigner'
+            ],409);
+            }
+            if($request->nom==""){
+                return response()->json([
+                    'erreur sur:'=>"le champs nom",
+                    'message'=>'Le nom est obligatoire veillez le renseigner'
+            ],409);
+            }
+            if($request->password==""){
+                return response()->json([
+                    'erreur sur:'=>$request->password,
+                    'message'=>'Le mot de passe est obligatoire veillez le renseigner'
+            ],409);
+            }
             if($emailExistant){
                 return response()->json([
                     'erreur sur:'=>$request->email,
@@ -99,6 +117,20 @@ class UserController extends Controller
     public function statut(string $statut){
         $usersA=User::where('active',1)->get();
         $usersD=User::where('active',0)->get();
+
+        if ($usersA->isEmpty()) {
+            return response()->json([
+                'message'=> "Aucun utilisateur de status est actif trouvé :",
+            ],200);
+        }
+        if ($usersD->isEmpty()) {
+            return response()->json([
+                'message'=> "Aucun utilisateur de status inactif trouvé :",
+            ],200);
+        }
+
+
+
         if ($statut=='actif') {
             return response()->json([
                 'message'=> "les utilisateurs dont leur status est actif :",
